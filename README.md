@@ -4,7 +4,7 @@ CS 6820 Final Project: Dinitz's Algorithm (iyh7)
 dependencies: python3
 
 activate venv
-pip install
+pip install (mostly for matlib)
 unit tests: python3 test.py -v
 
 main.py for experiment
