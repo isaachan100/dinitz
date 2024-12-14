@@ -6,3 +6,8 @@ dependencies: python3
 activate venv
 pip install
 unit tests: python3 test.py -v
+
+main.py for experiment
+test.py to test
+flow.py to implement dinitz
+graph.py to generate graphs for experiment
