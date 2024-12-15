@@ -61,9 +61,26 @@ class Graph:
 
         return graph
 
-    def plot_graph(x: List[int], y: List[float], x_label, y_label, title, file_name):
-        plt.plot(x, y)
+    """
+    plot graph with given parameters
+    """
+
+    def plot_graph(
+        x: List[List[int]],
+        y: List[List[float]],
+        algs: List[str],
+        x_label,
+        y_label,
+        title,
+        file_name,
+    ):
+        plt.figure()
+
+        for i in range(len(x)):
+            plt.plot(x[i], y[i], label=algs[i].value)
+
         plt.xlabel(x_label)
         plt.ylabel(y_label)
         plt.title(title)
+        plt.legend()
         plt.savefig(file_name)

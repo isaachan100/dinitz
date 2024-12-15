@@ -5,8 +5,8 @@ from queue import Queue
 
 
 class FlowAlg(Enum):
-    DINITZ = 1
-    EDMONDS_KARP = 2
+    DINITZ = "DINITZ"
+    EDMONDS_KARP = "EDMONDS-KARP"
 
 
 class FlowNetwork:
