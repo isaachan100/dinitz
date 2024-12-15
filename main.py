@@ -26,12 +26,14 @@ def average_time_experiment(graph_generator, graph_param, file_name, flow_alg, k
             graph = graph_generator(i, graph_param, 30)
             network = FlowNetwork(i, 0, i - 1)
             start_time = time.time()
+
             if flow_alg == FlowAlg.DINITZ:
                 f, iters = network.compute_max_flow_dinitz(graph)
                 iterations += iters
             elif flow_alg == FlowAlg.EDMONDS_KARP:
                 f, iters = network.compute_max_flow_edmonds_karp(graph)
                 iterations += iters
+
             end_time = time.time()
             total_time += end_time - start_time
             if sum(f[0].values()) > 0:
@@ -40,7 +42,14 @@ def average_time_experiment(graph_generator, graph_param, file_name, flow_alg, k
         results.append([i, total_time / 100])
         print_experiment_results(total_time / 100, iterations / 100, non_zero_flows, i)
 
-    Graph.plot_graph([x[0] for x in results], [x[1] for x in results], file_name)
+    Graph().plot_graph(
+        [x[0] for x in results],
+        [x[1] for x in results],
+        "number of vertices",
+        "average time in ms",
+        f"average time to compute max flow for {'dinitz' if flow_alg == FlowAlg.DINITZ else 'edmonds-karp'}",
+        file_name,
+    )
 
 
 def bipartite_reduction_experiment(
@@ -67,7 +76,14 @@ def bipartite_reduction_experiment(
         results.append([i, total_time / 100])
         print_experiment_results(total_time / 100, iterations / 100, non_zero_flows, i)
 
-    Graph.plot_graph([x[0] for x in results], [x[1] for x in results], file_name)
+    Graph().plot_graph(
+        [x[0] for x in results],
+        [x[1] for x in results],
+        "number of vertices in L",
+        "average time in ms",
+        f"average time to compute max bipartite matching for {'dinitz' if flow_alg == FlowAlg.DINITZ else 'edmonds-karp'}",
+        file_name,
+    )
 
 
 def print_experiment_results(average_time, average_iterations, non_zero_flows, n):
@@ -84,14 +100,45 @@ def print_experiment_results(average_time, average_iterations, non_zero_flows, n
 
 
 if __name__ == "__main__":
-    # average_time_experiment(Graph.generate_erdos_renyi_graph, .1, "erdos_renyi.png")
-    # average_time_experiment(
-    #     Graph.generate_erdos_renyi_graph, 0.1, "test.png", FlowAlg.EDMONDS_KARP, 100
-    # )
+    average_time_experiment(
+        Graph.generate_erdos_renyi_graph,
+        0.1,
+        "renyi_erdos_edmonds_karp.png",
+        FlowAlg.EDMONDS_KARP,
+        200,
+    )
+    average_time_experiment(
+        Graph.generate_erdos_renyi_graph,
+        0.1,
+        "renyi_erdos_dinitz.png",
+        FlowAlg.DINITZ,
+        200,
+    )
+    average_time_experiment(
+        Graph.generate_barabasi_albert_graph,
+        15,
+        "barabasi_albert_edmonds_karp.png",
+        FlowAlg.EDMONDS_KARP,
+        200,
+    )
+    average_time_experiment(
+        Graph.generate_barabasi_albert_graph,
+        15,
+        "barabasi_albert_dinitz.png",
+        FlowAlg.DINITZ,
+        200,
+    )
     bipartite_reduction_experiment(
         Graph.generate_erdos_renyi_bipartite_graph,
         0.1,
-        "bipartite.png",
+        "bipartite_edmonds_karp.png",
+        FlowAlg.EDMONDS_KARP,
+        200,
+    )
+    bipartite_reduction_experiment(
+        Graph.generate_erdos_renyi_bipartite_graph,
+        0.1,
+        "bipartite_dinitz.png",
         FlowAlg.DINITZ,
-        100,
+        200,
     )

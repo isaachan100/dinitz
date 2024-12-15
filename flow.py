@@ -1,6 +1,7 @@
 from collections import defaultdict
 from enum import Enum
 from typing import List
+from queue import Queue
 
 
 class FlowAlg(Enum):
@@ -13,6 +14,10 @@ class FlowNetwork:
         self.dest = dest
         self.num_vertices = num_vertices
         self.source = source
+
+    """
+    returns whether a flow is feasible based on Tardos and Kleinberg flows
+    """
 
     def is_flow_feasible(self, graph, flow) -> bool:
         # first check capacity constraint
@@ -39,6 +44,10 @@ class FlowNetwork:
 
         return True
 
+    """
+    compute max flow using Dinitz algorithm
+    """
+
     def compute_max_flow_dinitz(self, graph: List[dict[int]]):
         n = len(graph)
         f = [defaultdict(int) for i in range(n)]
@@ -53,6 +62,10 @@ class FlowNetwork:
             self.update_residual_graph(residual_graph, blocking_flow)
 
         return f, iterations
+
+    """
+    compute max flow using Edmonds-Karp algorithm
+    """
 
     def compute_max_flow_edmonds_karp(self, graph: List[dict[int]]):
         n = len(graph)
@@ -71,6 +84,10 @@ class FlowNetwork:
 
     """
     graph should have 2n vertices, L = [1, ..., n] and R = [n + 1, 2n]
+    """
+
+    """
+    computes the maximum size of a bipartite matching in a bipartite graph
     """
 
     def compute_max_bipartite_matching_size(
@@ -97,8 +114,8 @@ class FlowNetwork:
     returns a blocking flow specified by Algorithm 3 from section 4.3 of 6820 Flow lecture notes
     """
 
-    def compute_blocking_flow(self, graph: List[dict[int]]) -> List[List[int]]:
-        h = [defaultdict(int) for i in range(len(graph))]
+    def compute_blocking_flow(self, graph: List[dict[int]]) -> List[dict[int]]:
+        h = [defaultdict(int) for _ in range(len(graph))]
 
         advancing_graph = self.compute_advancing_graph(graph)
 
@@ -135,7 +152,6 @@ class FlowNetwork:
                     stack.append(key)
                     break
             else:
-                # TODO: can probably make this faster with reverse adjacency list
                 for v in range(self.num_vertices):
                     if u in advancing_graph[v]:
                         del advancing_graph[v][u]
@@ -150,19 +166,24 @@ class FlowNetwork:
     def compute_advancing_graph(self, graph: List[dict[int]]) -> List[dict[int]]:
         advancing_graph = [{} for _ in range(self.num_vertices)]
 
-        stack = [self.source]
-        visited = {self.source: 0}
+        # compute level graph first
+        level = [-1] * self.num_vertices
+        level[self.source] = 0
+        queue = Queue()
+        queue.put(self.source)
 
-        while len(stack) != 0:
-            node = stack.pop()
-            level = visited[node]
+        while not queue.empty():
+            u = queue.get(0)
+            for v, c in graph[u].items():
+                if c > 0 and level[v] == -1:
+                    level[v] = level[u] + 1
+                    queue.put(v)
 
-            for i, c in graph[node].items():
-                if c > 0 and (i not in visited or visited[i] > level):
-                    advancing_graph[node][i] = c
-                    stack.append(i)
-                    if i not in visited:
-                        visited[i] = level + 1
+        # iterate through edges and add advancing edges to advancing_graph
+        for u in range(self.num_vertices):
+            for v, c in graph[u].items():
+                if c > 0 and level[v] > level[u]:
+                    advancing_graph[u][v] = c
 
         return advancing_graph
 
@@ -175,6 +196,10 @@ class FlowNetwork:
             for k in h[i].keys():
                 f[i][k] += h[i][k]
 
+    """
+    constructs the residual graph of [graph]
+    """
+
     def construct_residual_graph(self, graph):
         residual_graph = [defaultdict(int) for i in range(len(graph))]
 
@@ -184,11 +209,19 @@ class FlowNetwork:
 
         return residual_graph
 
+    """
+    updates [residual_graph] with [flow]
+    """
+
     def update_residual_graph(self, residual_graph, flow):
         for i in range(len(flow)):
             for k in flow[i].keys():
                 residual_graph[i][k] -= flow[i][k]
                 residual_graph[k][i] += flow[i][k]
+
+    """
+    returns true if [residual_graph] contains a path from source to dest
+    """
 
     def contains_st_path(self, residual_graph) -> bool:
         visited = set()
@@ -206,17 +239,23 @@ class FlowNetwork:
 
         return False
 
+    """
+    using BFS, computes the shortest path from source to dest in [residual_graph]
+    note: this function assumes such a path exists
+    """
+
     def compute_shortest_path_flow(self, residual_graph):
         visited = set()
         visited.add(self.source)
-        stack = [self.source]
+        queue = Queue()
+        queue.put(self.source)
         parent = {self.source: None}
 
-        while len(stack) != 0:
-            u = stack.pop()
+        while not queue.empty():
+            u = queue.get()
             for v, c in residual_graph[u].items():
                 if c > 0 and v not in visited:
-                    stack.append(v)
+                    queue.put(v)
                     visited.add(v)
                     parent[v] = u
 

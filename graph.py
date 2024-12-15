@@ -26,6 +26,10 @@ class Graph:
 
         return graph
 
+    """
+    generates a random Erdos-Renyi bipartite graph with n vertices and edge probability p in (0, 1)
+    """
+
     def generate_erdos_renyi_bipartite_graph(n: int, p: float):
         graph = [{} for _ in range(1, 2 * n + 1)]
 
@@ -57,6 +61,9 @@ class Graph:
 
         return graph
 
-    def plot_graph(x: List[int], y: List[float], file_name: str):
+    def plot_graph(x: List[int], y: List[float], x_label, y_label, title, file_name):
         plt.plot(x, y)
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+        plt.title(title)
         plt.savefig(file_name)
