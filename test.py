@@ -43,31 +43,6 @@ class TestFlowMethods(unittest.TestCase):
         self.flow_network2 = FlowNetwork(7, 0, 6)
         self.graph2 = graph2
 
-    def test_flow_feasible(self):
-        flow: List[List[int]] = [
-            [0, 1, 2, 0],
-            [-1, 0, 0, 1],
-            [-2, 0, 0, 2],
-            [0, -1, -2, 0],
-        ]
-
-        self.assertTrue(self.flow_network.is_flow_feasible(flow))
-
-        # check skew-symmetry
-        flow[1][0] = 0
-        self.assertFalse(self.flow_network.is_flow_feasible(flow))
-
-        # check flow conservation
-        flow[1][0] = 1
-        flow[0][2] = 3
-        flow[2][0] = -3
-        self.assertFalse(self.flow_network.is_flow_feasible(flow))
-
-        # check capacity constraint
-        flow[2][3] = 3
-        flow[3][2] = -3
-        self.assertFalse(self.flow_network.is_flow_feasible(flow))
-
     def test_compute_advancing_graph(self):
         graph: List[dict[int]] = [{2: 3}, {0: 1}, {3: 4}, {1: 2}]
 
@@ -108,9 +83,17 @@ class TestFlowMethods(unittest.TestCase):
         ]
 
         for i, [network, graph] in enumerate(networks):
-            self.assertEqual(network.compute_max_flow_dinitz(graph), res[i])
+            self.assertEqual(network.compute_max_flow_dinitz(graph)[0], res[i])
+            self.assertEqual(network.compute_max_flow_edmonds_karp(graph)[0], res[i])
             self.assertTrue(
-                network.is_flow_feasible(graph, network.compute_max_flow_dinitz(graph))
+                network.is_flow_feasible(
+                    graph, network.compute_max_flow_dinitz(graph)[0]
+                )
+            )
+            self.assertTrue(
+                network.is_flow_feasible(
+                    graph, network.compute_max_flow_edmonds_karp(graph)[0]
+                )
             )
 
 

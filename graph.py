@@ -26,6 +26,16 @@ class Graph:
 
         return graph
 
+    def generate_erdos_renyi_bipartite_graph(n: int, p: float):
+        graph = [{} for _ in range(1, 2 * n + 1)]
+
+        for i in range(1, n + 1):
+            for j in range(n + 1, 2 * n + 1):
+                if random.random() < p:
+                    graph[i][j] = 1
+
+        return graph
+
     def generate_barabasi_albert_graph(n: int, m: int, c: int):
         graph = [{} for _ in range(n)]
         degrees = [0 for _ in range(n)]

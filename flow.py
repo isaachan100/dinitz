@@ -1,7 +1,11 @@
-import copy
-
 from collections import defaultdict
+from enum import Enum
 from typing import List
+
+
+class FlowAlg(Enum):
+    DINITZ = 1
+    EDMONDS_KARP = 2
 
 
 class FlowNetwork:
@@ -40,12 +44,53 @@ class FlowNetwork:
         f = [defaultdict(int) for i in range(n)]
         residual_graph = self.construct_residual_graph(graph)
 
+        iterations = 0
+
         while self.contains_st_path(residual_graph):
+            iterations += 1
             blocking_flow = self.compute_blocking_flow(residual_graph)
             self.sum_flows(f, blocking_flow)
             self.update_residual_graph(residual_graph, blocking_flow)
 
-        return f
+        return f, iterations
+
+    def compute_max_flow_edmonds_karp(self, graph: List[dict[int]]):
+        n = len(graph)
+        f = [defaultdict(int) for _ in range(n)]
+        residual_graph = self.construct_residual_graph(graph)
+
+        iterations = 0
+
+        while self.contains_st_path(residual_graph):
+            iterations += 1
+            path_flow = self.compute_shortest_path_flow(residual_graph)
+            self.sum_flows(f, path_flow)
+            self.update_residual_graph(residual_graph, path_flow)
+
+        return f, iterations
+
+    """
+    graph should have 2n vertices, L = [1, ..., n] and R = [n + 1, 2n]
+    """
+
+    def compute_max_bipartite_matching_size(
+        self, graph: List[dict[int]], flow_alg: FlowAlg
+    ) -> int:
+        n = len(graph) // 2
+        f = [defaultdict(int) for _ in range(2 * n + 2)]
+
+        # add edges for source = 0 and dest = 2n + 1
+        graph.insert(0, dict([(i, 1) for i in range(1, n + 1)]))
+        for i in range(n + 1, 2 * n + 1):
+            graph[i][2 * n + 1] = 1
+        graph.append({})
+
+        if flow_alg == FlowAlg.DINITZ:
+            f, iterations = self.compute_max_flow_dinitz(graph)
+            return sum([f[0][i] for i in range(1, n + 1)]), iterations
+        elif flow_alg == FlowAlg.EDMONDS_KARP:
+            f, iterations = self.compute_max_flow_edmonds_karp(graph)
+            return sum([f[0][i] for i in range(1, n + 1)]), iterations
 
     """
     takes a graph G represented by a matrix of capacities
@@ -160,3 +205,34 @@ class FlowNetwork:
                     visited.add(v)
 
         return False
+
+    def compute_shortest_path_flow(self, residual_graph):
+        visited = set()
+        visited.add(self.source)
+        stack = [self.source]
+        parent = {self.source: None}
+
+        while len(stack) != 0:
+            u = stack.pop()
+            for v, c in residual_graph[u].items():
+                if c > 0 and v not in visited:
+                    stack.append(v)
+                    visited.add(v)
+                    parent[v] = u
+
+        path = []
+        v = self.dest
+        while v is not None:
+            path.append(v)
+            v = parent[v]
+
+        path.reverse()
+
+        min_capacity = min(
+            [residual_graph[path[i]][path[i + 1]] for i in range(len(path) - 1)]
+        )
+        path_flow = [defaultdict(int) for i in range(len(residual_graph))]
+        for i in range(len(path) - 1):
+            path_flow[path[i]][path[i + 1]] = min_capacity
+
+        return path_flow
