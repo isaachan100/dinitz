@@ -1,10 +1,10 @@
 import matplotlib
 import matplotlib.pyplot as plt
-
-matplotlib.use("Agg")
 import random
 
 from typing import List
+
+matplotlib.use("Agg")
 
 
 class Graph:
@@ -77,10 +77,11 @@ class Graph:
         plt.figure()
 
         for i in range(len(x)):
-            plt.plot(x[i], y[i], label=algs[i].value)
+            plt.plot(x[i], y[i], label=algs[i])
 
         plt.xlabel(x_label)
         plt.ylabel(y_label)
         plt.title(title)
-        plt.legend()
-        plt.savefig(file_name)
+        if len(algs) > 1:
+            plt.legend()
+        plt.savefig(f"./plots/{file_name}")
