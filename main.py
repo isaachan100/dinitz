@@ -10,6 +10,7 @@ compute and plot the average time it takes to compute max flow over 100 trials f
 graph_generator: function that generates a graph
 graph_param: parameter for the graph generator
 file_name: name of the output file
+graph_title: title of the graph
 flow_alg: function that computes max flow
 k: maximum number of vertices, defaults to 100
 """
@@ -27,7 +28,7 @@ def average_time_experiment(
             iterations = 0
             non_zero_flows = 0
 
-            rounds = 50
+            rounds = 1000
 
             for _ in range(rounds):
                 graph = graph_generator(i, graph_param, 30)
@@ -86,6 +87,7 @@ compute and plot the average time it takes to compute max bipartite matching ove
 graph_generator: function that generates a bipartite graph
 graph_param: parameter for the graph generator
 file_name: name of the output file
+graph_title: title of the graph
 flow_alg: function that computes max flow
 k: maximum number of vertices, defaults to 100
 """
@@ -109,7 +111,7 @@ def bipartite_reduction_experiment(
             iterations = 0
             non_zero_flows = 0
 
-            rounds = 50
+            rounds = 1000
 
             for _ in range(rounds):
                 graph = graph_generator(i, graph_param)
@@ -173,27 +175,27 @@ def print_experiment_results(average_time, average_iterations, non_zero_flows, n
 
 
 if __name__ == "__main__":
-    # print("starting experiment for Renyi-Erdos graphs")
-    # average_time_experiment(
-    #     Graph.generate_erdos_renyi_graph,
-    #     0.1,
-    #     "renyi_erdos.png",
-    #     "average time to compute max flow Renyi-Erdos",
-    #     [FlowAlg.EDMONDS_KARP, FlowAlg.DINITZ],
-    #     "Renyi-Erdos",
-    #     100,
-    # )
+    print("starting experiment for Renyi-Erdos graphs")
+    average_time_experiment(
+        Graph.generate_erdos_renyi_graph,
+        0.1,
+        "renyi_erdos.png",
+        "average time to compute max flow Renyi-Erdos",
+        [FlowAlg.EDMONDS_KARP, FlowAlg.DINITZ],
+        "Renyi-Erdos",
+        300,
+    )
 
-    # print("starting experiment for Barabasi-Albert graphs")
-    # average_time_experiment(
-    #     Graph.generate_barabasi_albert_graph,
-    #     15,
-    #     "barabasi_albert.png",
-    #     "average time to compute max flow Barabasi-Albert",
-    #     [FlowAlg.EDMONDS_KARP, FlowAlg.DINITZ],
-    #     "Barabasi-Albert",
-    #     100,
-    # )
+    print("starting experiment for Barabasi-Albert graphs")
+    average_time_experiment(
+        Graph.generate_barabasi_albert_graph,
+        15,
+        "barabasi_albert.png",
+        "average time to compute max flow Barabasi-Albert",
+        [FlowAlg.EDMONDS_KARP, FlowAlg.DINITZ],
+        "Barabasi-Albert",
+        300,
+    )
 
     print("starting experiment for bipartite matching")
     bipartite_reduction_experiment(
@@ -202,5 +204,5 @@ if __name__ == "__main__":
         "bipartite.png",
         "average time to compute max bipartite matching size",
         [FlowAlg.EDMONDS_KARP, FlowAlg.DINITZ],
-        100,
+        200,
     )

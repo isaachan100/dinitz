@@ -45,7 +45,7 @@ class FlowNetwork:
         return True
 
     """
-    compute max flow using Dinitz algorithm
+    compute max flow using Dinitz's algorithm
     """
 
     def compute_max_flow_dinitz(self, graph: List[dict[int]]):
@@ -83,11 +83,8 @@ class FlowNetwork:
         return f, iterations
 
     """
-    graph should have 2n vertices, L = [1, ..., n] and R = [n + 1, 2n]
-    """
-
-    """
     computes the maximum size of a bipartite matching in a bipartite graph
+    graph should have 2n vertices, L = [1, ..., n] and R = [n + 1, 2n]
     """
 
     def compute_max_bipartite_matching_size(
@@ -110,7 +107,7 @@ class FlowNetwork:
             return sum([f[0][i] for i in range(1, n + 1)]), iterations
 
     """
-    takes a graph G represented by a matrix of capacities
+    takes a graph G represented by an adjacency list of capacities
     returns a blocking flow specified by Algorithm 3 from section 4.3 of 6820 Flow lecture notes
     """
 

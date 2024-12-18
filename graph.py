@@ -40,6 +40,11 @@ class Graph:
 
         return graph
 
+    """
+    generates a random Barabasi-Albert graph with n vertices and m edges to attach for each new node
+    each edge has capacity uniformly at random in [1, c]
+    """
+
     def generate_barabasi_albert_graph(n: int, m: int, c: int):
         graph = [{} for _ in range(n)]
         degrees = [0 for _ in range(n)]

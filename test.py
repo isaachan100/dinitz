@@ -1,8 +1,7 @@
 import unittest
 
-from typing import List
-
 from flow import FlowNetwork
+from typing import List
 
 
 class TestFlowMethods(unittest.TestCase):

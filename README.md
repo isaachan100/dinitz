@@ -8,6 +8,6 @@ This project requires `python3`. To run the project:
 3. Run `pip install -r requirements.txt` to install the requirements: for this project the only requirement is `matplotlib`.
 
 ## Project
-`flow.py` contains the code that performs max-flow algorithms to compute the max flow of a graph. `graph.py` contains the code to generate flow networks and plot the results of experiments. `main.py` contaisn the experiments.
+`flow.py` contains the code that performs max-flow algorithms to compute the max flow of a graph. `graph.py` contains the code to generate flow networks and plot the results of experiments. `main.py` contains the experiments.
 1. Run `python3 main.py` to run the experiments, and modify the file to run your own experiments.
 2. Run `python3 test.py -v` to run the unit tests.
